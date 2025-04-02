@@ -1,5 +1,6 @@
 import './Login.css';
 import { useState } from 'react';
+import { postLogin } from '../../api/backend';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -7,7 +8,9 @@ export default function Login() {
 
   async function submitData(e) {
     e.preventDefault();
-    console.log(username);
+    const response = await postLogin({ username, password });
+    console.log(response);
+    // postLogin({ username, password });
   }
 
   return (
