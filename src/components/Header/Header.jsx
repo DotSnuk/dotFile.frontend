@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useUser } from '../UserContext/UserContext';
+import MenuDropdown from '../MenuDropdown/MenuDropdown';
 
 export default function Header() {
   const { loading, user, logout, isAuth } = useUser();
@@ -9,6 +10,7 @@ export default function Header() {
   const loggedIn = (
     <>
       <Link to='/bla'>Bla</Link>
+      <MenuDropdown />
       <input type='button' onClick={() => logout()} value='Logout' />
     </>
   );
