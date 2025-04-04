@@ -9,9 +9,7 @@ export default function Header() {
 
   const loggedIn = (
     <>
-      <Link to='/bla'>Bla</Link>
       <MenuDropdown />
-      <input type='button' onClick={() => logout()} value='Logout' />
     </>
   );
   const notLoggedIn = (
