@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { postRegister } from '../../api/backend';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../UserContext/UserContext';
 
 export default function Register() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const { checkAuthStatus } = useUser();
+  const navigate = useNavigate();
 
   async function submitData(e) {
     e.preventDefault();
@@ -15,6 +19,10 @@ export default function Register() {
       password,
       confirm,
     });
+    if (response.success) {
+      checkAuthStatus();
+      navigate('/');
+    }
   }
 
   return (

@@ -46,7 +46,9 @@ export default function UserContextProvider({ children }) {
   }
 
   return (
-    <UserContext.Provider value={{ user, logout, loading, isAuth }}>
+    <UserContext.Provider
+      value={{ user, logout, loading, isAuth, checkAuthStatus }}
+    >
       {children}
     </UserContext.Provider>
   );
