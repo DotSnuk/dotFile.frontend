@@ -4,7 +4,7 @@ import './App.css';
 
 export default function App() {
   return (
-    <div className='margin flex h-full flex-col justify-start'>
+    <div className='margin flex h-dvh flex-col justify-start'>
       <Header />
       <Outlet />
     </div>

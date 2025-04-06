@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { postLogin } from '../../api/backend';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../UserContext/UserContext';
+import CenterContainer from '../CenterContainer/CenterContainer';
+import * as tailwindClasses from '../../assets/tailwindClasses';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -18,28 +20,40 @@ export default function Login() {
       checkAuthStatus();
       navigate('/');
     }
-    // postLogin({ username, password });
   }
 
   return (
-    <form onSubmit={e => submitData(e)}>
-      <label htmlFor='username' className=''>
-        username:
-        <input
-          type='text'
-          name='username'
-          className='rounded-sm border-2 border-solid border-indigo-500 p-1 indent-1'
-          onChange={e => setUsername(e.target.value)}
-        />
-      </label>
-      <label htmlFor='password'>password: </label>
-      <input
-        type='password'
-        name='password'
-        className='rounded-sm border-2 border-solid border-indigo-500 p-1 indent-1'
-        onChange={e => setPassword(e.target.value)}
-      />
-      <button type='submit'>Login</button>
-    </form>
+    <CenterContainer>
+      <form onSubmit={e => submitData(e)} className={tailwindClasses.inputForm}>
+        <div className={tailwindClasses.inputContainer}>
+          <label htmlFor='username' className={tailwindClasses.inputLabel}>
+            username
+          </label>
+          <input
+            type='text'
+            id='username'
+            name='username'
+            className={tailwindClasses.inputText}
+            onChange={e => setUsername(e.target.value)}
+          />
+        </div>
+        <div className='grid grid-cols-3 gap-2'>
+          <label htmlFor='password' className={tailwindClasses.inputLabel}>
+            password
+          </label>
+          <input
+            type='password'
+            name='password'
+            id='password'
+            className={tailwindClasses.inputText}
+            onChange={e => setPassword(e.target.value)}
+          />
+        </div>
+
+        <button type='submit' className={tailwindClasses.formButton}>
+          Login
+        </button>
+      </form>
+    </CenterContainer>
   );
 }
