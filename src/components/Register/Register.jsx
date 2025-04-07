@@ -58,6 +58,7 @@ export default function Register() {
           </label>
           <input
             type='password'
+            id='password'
             className={tailwindClasses.inputText}
             onChange={e => setPassword(e.target.value)}
           />

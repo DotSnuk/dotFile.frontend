@@ -27,7 +27,7 @@ export default function Login() {
       <form onSubmit={e => submitData(e)} className={tailwindClasses.inputForm}>
         <div className={tailwindClasses.inputContainer}>
           <label htmlFor='username' className={tailwindClasses.inputLabel}>
-            username
+            Username
           </label>
           <input
             type='text'
@@ -39,7 +39,7 @@ export default function Login() {
         </div>
         <div className='grid grid-cols-3 gap-2'>
           <label htmlFor='password' className={tailwindClasses.inputLabel}>
-            password
+            Password
           </label>
           <input
             type='password'

@@ -8,20 +8,19 @@ export default function Header() {
   if (loading) return <div>Loading...</div>;
 
   const loggedIn = (
-    <>
+    <div className='col-span-1'>
       <MenuDropdown />
-    </>
+    </div>
   );
   const notLoggedIn = (
-    <>
-      <Link to='/login'>Login</Link>
-      <Link to='/register'>Register</Link>
-    </>
+    <div className='col-span-1'>
+      <Link to='/login'>Login</Link> | <Link to='/register'>Register</Link>
+    </div>
   );
 
   return (
-    <nav className='flex flex-row justify-evenly'>
-      <h1 className='text-xl'>.dotFile</h1>
+    <nav className='grid grid-cols-2 place-items-center'>
+      <h1 className='col-span-1 text-xl'>.dotFile</h1>
       {isAuth() ? loggedIn : notLoggedIn}
     </nav>
   );
