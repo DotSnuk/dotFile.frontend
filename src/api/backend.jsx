@@ -38,3 +38,13 @@ export async function getTest() {
   console.log(response.data);
   return response;
 }
+
+export async function logDir() {
+  const response = await axios.get('/api/logDir');
+  return response;
+}
+
+export async function getDir() {
+  const response = await axios.get('/api/getDir');
+  return response.data;
+}

@@ -2,6 +2,7 @@ import { Menu } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUser } from '../UserContext/UserContext';
+import { logDir } from '../../api/backend';
 
 const MENU_CLICKED_STATES = [
   `transition duration-300 rotate-0`,
@@ -24,7 +25,7 @@ export default function MenuDropdown() {
   }
   const settings = (
     <nav className={SETTINGS_DROPDOWN + SETTINGS_CLICKED_STATES[clickedIndex]}>
-      <Link>Test</Link>
+      <Link onClick={() => logDir()}>Test</Link>
       <input type='button' onClick={() => logout()} value='Logout' />
     </nav>
   );
