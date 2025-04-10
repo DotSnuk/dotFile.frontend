@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { getDir } from '../../api/backend';
 import { getDateString } from '../../utils/dateParser';
 import sizeConverter from '../../utils/sizeConverter';
+import { inputForm, textRow } from '../../assets/tailwindClasses';
 
 export default function FileViewer() {
   const { loading, isAuth } = useUser();
@@ -20,11 +21,10 @@ export default function FileViewer() {
 
   const datafiles = Array.isArray(files) ? (
     files.map(file => (
-      <div key={file.filename} className='flex flex-row'>
-        <div>{file.filename}</div>
-        <div>{getDateString(file.dateCreated)}</div>
-        size:
-        <div>{sizeConverter(file.size)}</div>
+      <div key={file.filename} className={textRow + ' grid grid-cols-7'}>
+        <span className='col-span-4'>{file.filename}</span>
+        <span className='col-span-2'>{getDateString(file.dateCreated)}</span>
+        <span className='col-span-1'>{sizeConverter(file.size)}</span>
       </div>
     ))
   ) : (
@@ -35,7 +35,14 @@ export default function FileViewer() {
 
   return (
     <CenterContainer>
-      <div className='flex flex-col'>{datafiles}</div>
+      <div className={inputForm + 'flex w-xl flex-col'}>
+        <div className='grid grid-cols-7'>
+          <span className='col-span-4 text-xs'>Filename</span>
+          <span className='col-span-2 text-xs'>Date</span>
+          <span className='col-span-1 text-xs'>Size</span>
+        </div>
+        <div>{datafiles}</div>
+      </div>
     </CenterContainer>
   );
 }

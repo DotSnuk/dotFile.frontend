@@ -2,7 +2,6 @@ export default function sizeConverter(size) {
   let sizeIncremented = 0;
   let updatedSize = size;
   while (updatedSize / 1000 > 1) {
-    console.log('here');
     updatedSize = updatedSize / 1000;
     sizeIncremented += 1;
   }
