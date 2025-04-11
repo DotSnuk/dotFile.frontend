@@ -9,11 +9,11 @@ import { inputForm, textRow } from '../../assets/tailwindClasses';
 export default function FileViewer() {
   const { loading, isAuth } = useUser();
   const [files, setFiles] = useState([]);
+  const [currentPath, setCurrentPath] = useState(new PathNode('/'));
 
   useEffect(() => {
     async function getData() {
       const data = await getDir();
-      console.log(data);
       setFiles(data.data);
     }
     getData();
@@ -31,11 +31,19 @@ export default function FileViewer() {
     <div>No file</div>
   );
 
+  const path = (
+    <div>
+      <span>Path: </span>
+      <span className={textRow}>{currentPath.path}</span>
+    </div>
+  );
+
   if (loading) return <div>Loading...</div>;
 
   return (
     <CenterContainer>
       <div className={inputForm + 'flex w-xl flex-col'}>
+        {path}
         <div className='grid grid-cols-7'>
           <span className='col-span-4 text-xs'>Filename</span>
           <span className='col-span-2 text-xs'>Date</span>
@@ -45,4 +53,8 @@ export default function FileViewer() {
       </div>
     </CenterContainer>
   );
+}
+
+function PathNode(path, parent = null) {
+  return { path, parent };
 }
