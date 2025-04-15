@@ -23,15 +23,15 @@ export default function FileViewer() {
   }, [currentPath]);
 
   const currentFolders = folders.map(folder => (
-    <div key={folder} className='flex flex-row gap-1'>
+    <div
+      key={folder}
+      className='flex flex-row gap-1'
+      onClick={() => {
+        setCurrentPath(prev => new PathNode(folder, prev));
+      }}
+    >
       <Folder />
-      <div
-        onClick={() => {
-          setCurrentPath(prev => new PathNode(folder, prev));
-        }}
-      >
-        {folder}
-      </div>
+      <div>{folder}</div>
     </div>
   ));
 
@@ -92,6 +92,15 @@ export default function FileViewer() {
           <span className='col-span-2 text-xs'>Date</span>
           <span className='col-span-1 text-xs'>Size</span>
         </div>
+        {currentPath.parent !== null && (
+          <div
+            className='flex flex-row gap-1'
+            onClick={() => setCurrentPath(prev => prev.parent)}
+          >
+            <Folder />
+            <div>..</div>
+          </div>
+        )}
         {currentFolders}
         <div>{datafiles}</div>
         {buttons}
