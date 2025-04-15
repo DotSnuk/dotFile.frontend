@@ -15,20 +15,19 @@ export default function FileViewer() {
   const [newFolder, setNewFolder] = useState('');
 
   useEffect(() => {
-    async function getData() {
-      const data = await getDir();
-      setFiles(data.data.items);
-      setFolders(data.data.folders);
-    }
     getData();
   }, []);
+
+  useEffect(() => {
+    getData();
+  }, [currentPath]);
 
   const currentFolders = folders.map(folder => (
     <div key={folder} className='flex flex-row gap-1'>
       <Folder />
       <div
         onClick={() => {
-          setCurrentPath(value => new PathNode(folder, value));
+          setCurrentPath(prev => new PathNode(folder, prev));
         }}
       >
         {folder}
@@ -54,6 +53,12 @@ export default function FileViewer() {
       <span className={textRow}>{getFullPath(currentPath)}</span>
     </div>
   );
+
+  async function getData() {
+    const data = await getDir({ path: getFullPath(currentPath) });
+    setFiles(data.data.items);
+    setFolders(data.data.folders);
+  }
 
   async function submitNewFolder(e) {
     e.preventDefault();
