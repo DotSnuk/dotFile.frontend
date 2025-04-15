@@ -4,20 +4,38 @@ import { useEffect, useState } from 'react';
 import { getDir } from '../../api/backend';
 import { getDateString } from '../../utils/dateParser';
 import sizeConverter from '../../utils/sizeConverter';
-import { inputForm, textRow } from '../../assets/tailwindClasses';
+import { inputForm, textRow, formButton } from '../../assets/tailwindClasses';
+import { makeDir } from '../../api/backend';
+import { Folder } from 'lucide-react';
 
 export default function FileViewer() {
   const { loading, isAuth } = useUser();
   const [files, setFiles] = useState([]);
+  const [folders, setFolders] = useState([]);
   const [currentPath, setCurrentPath] = useState(new PathNode('/'));
+  const [newFolder, setNewFolder] = useState('');
 
   useEffect(() => {
     async function getData() {
       const data = await getDir();
-      setFiles(data.data);
+      setFiles(data.data.items);
+      setFolders(data.data.folders);
     }
     getData();
   }, []);
+
+  const currentFolders = folders.map(folder => (
+    <div key={folder} className='flex flex-row gap-1'>
+      <Folder />
+      <div
+        onClick={() => {
+          setCurrentPath(value => new PathNode(folder, value));
+        }}
+      >
+        {folder}
+      </div>
+    </div>
+  ));
 
   const datafiles = Array.isArray(files) ? (
     files.map(file => (
@@ -34,7 +52,28 @@ export default function FileViewer() {
   const path = (
     <div>
       <span>Path: </span>
-      <span className={textRow}>{currentPath.path}</span>
+      <span className={textRow}>{getFullPath(currentPath)}</span>
+    </div>
+  );
+
+  async function submitNewFolder(e) {
+    e.preventDefault();
+    await makeDir({ newFolder });
+  }
+
+  const buttons = (
+    <div>
+      <form onSubmit={e => submitNewFolder(e)}>
+        <input
+          type='text'
+          name='foldername'
+          id='foldername'
+          onChange={e => setNewFolder(e.target.value)}
+        />
+        <button type='submit' className={formButton}>
+          New folder
+        </button>
+      </form>
     </div>
   );
 
@@ -49,7 +88,9 @@ export default function FileViewer() {
           <span className='col-span-2 text-xs'>Date</span>
           <span className='col-span-1 text-xs'>Size</span>
         </div>
+        {currentFolders}
         <div>{datafiles}</div>
+        {buttons}
       </div>
     </CenterContainer>
   );
@@ -57,4 +98,10 @@ export default function FileViewer() {
 
 function PathNode(path, parent = null) {
   return { path, parent };
+}
+
+function getFullPath(node, path = '') {
+  while (node.parent !== null)
+    return getFullPath(node.parent, path + '/' + node.path);
+  return path + node.path;
 }

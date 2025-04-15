@@ -48,3 +48,7 @@ export async function getDir() {
   const response = await axios.get('/api/getDir');
   return response.data;
 }
+
+export async function makeDir(newFolder) {
+  await axios.post('/api/makeDir', newFolder);
+}
