@@ -1,11 +1,10 @@
 import CenterContainer from '../CenterContainer/CenterContainer';
 import { useUser } from '../UserContext/UserContext';
 import { useEffect, useState } from 'react';
-import { getDir } from '../../api/backend';
 import { getDateString } from '../../utils/dateParser';
 import sizeConverter from '../../utils/sizeConverter';
 import { inputForm, textRow, formButton } from '../../assets/tailwindClasses';
-import { makeDir } from '../../api/backend';
+import { makeDir, getDir } from '../../api/backend';
 import { Folder } from 'lucide-react';
 
 export default function FileViewer() {

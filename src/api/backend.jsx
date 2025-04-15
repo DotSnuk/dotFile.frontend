@@ -45,7 +45,7 @@ export async function logDir() {
 }
 
 export async function getDir() {
-  const response = await axios.get('/api/getDir');
+  const response = await axios.post('/api/getDir');
   return response.data;
 }
 
