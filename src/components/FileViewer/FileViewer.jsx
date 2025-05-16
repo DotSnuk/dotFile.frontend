@@ -6,28 +6,30 @@ import sizeConverter from '../../utils/sizeConverter';
 import { inputForm, textRow, formButton } from '../../assets/tailwindClasses';
 import { makeDir, getDir } from '../../api/backend';
 import { Folder } from 'lucide-react';
+import { getHomeDir } from '../../api/backend';
 
 export default function FileViewer() {
   const { loading, isAuth } = useUser();
   const [files, setFiles] = useState([]);
   const [folders, setFolders] = useState([]);
-  const [currentPath, setCurrentPath] = useState(new PathNode('/'));
+  const [currentFolderId, setCurrentFolderId] = useState(0);
+  const [currentPath, setCurrentPath] = useState('');
   const [newFolder, setNewFolder] = useState('');
 
   useEffect(() => {
-    getData();
+    getFolderData();
   }, []);
 
   useEffect(() => {
-    getData();
-  }, [currentPath]);
+    getFolderData();
+  }, [currentFolderId]);
 
   const currentFolders = folders.map(folder => (
     <div
       key={folder}
       className='flex flex-row gap-1'
       onClick={() => {
-        setCurrentPath(prev => new PathNode(folder, prev));
+        setCurrentFolderId(prev => new PathNode(folder, prev));
       }}
     >
       <Folder />
@@ -50,14 +52,18 @@ export default function FileViewer() {
   const path = (
     <div>
       <span>Path: </span>
-      <span className={textRow}>{getFullPath(currentPath)}</span>
+      <span className={textRow}>{currentPath}</span>
     </div>
   );
 
-  async function getData() {
-    const data = await getDir({ path: getFullPath(currentPath) });
-    setFiles(data.data.items);
-    setFolders(data.data.folders);
+  async function getFolderData() {
+    // const folderData = await getDir({ path: getFullPath(currentFolderId) });
+    // setFiles folderData.items);
+    // setFolders folderData.folders);
+    const folderData = await getHomeDir();
+    setCurrentPath(getFullPath(folderData));
+    setCurrentFolderId(folderData.id);
+    console.log(folderData);
   }
 
   async function submitNewFolder(e) {
@@ -92,17 +98,21 @@ export default function FileViewer() {
           <span className='col-span-2 text-xs'>Date</span>
           <span className='col-span-1 text-xs'>Size</span>
         </div>
-        {currentPath.parent !== null && (
+
+        {/* {currentFolderId.parent !== null && (
           <div
             className='flex flex-row gap-1'
-            onClick={() => setCurrentPath(prev => prev.parent)}
+            onClick={() => setCurrentFolderId(prev => prev.parent)}
           >
             <Folder />
             <div>..</div>
           </div>
-        )}
-        {currentFolders}
-        <div>{datafiles}</div>
+        )} */}
+        <div className=''>
+          {currentFolders}
+          {datafiles}
+        </div>
+
         {buttons}
       </div>
     </CenterContainer>
@@ -113,8 +123,13 @@ function PathNode(path, parent = null) {
   return { path, parent };
 }
 
+// function getFullPath(node, path = '') {
+//   while (node.parent !== null)
+//     return getFullPath(node.parent, path + '/' + node.path);
+//   return path + node.path;
+// }
+
 function getFullPath(node, path = '') {
-  while (node.parent !== null)
-    return getFullPath(node.parent, path + '/' + node.path);
-  return path + node.path;
+  while (node.parent !== null) return getFullPath(node.parent, node.name + '/');
+  return '/' + path;
 }
