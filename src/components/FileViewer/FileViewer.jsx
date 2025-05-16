@@ -4,9 +4,8 @@ import { useEffect, useState } from 'react';
 import { getDateString } from '../../utils/dateParser';
 import sizeConverter from '../../utils/sizeConverter';
 import { inputForm, textRow, formButton } from '../../assets/tailwindClasses';
-import { makeDir, getDir } from '../../api/backend';
+import { makeDir, getDir, postUpload, getHomeDir } from '../../api/backend';
 import { Folder } from 'lucide-react';
-import { getHomeDir } from '../../api/backend';
 
 export default function FileViewer() {
   const { loading, isAuth } = useUser();
@@ -66,6 +65,15 @@ export default function FileViewer() {
     console.log(folderData);
   }
 
+  async function uploadFile(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const formValues = {
+      inputfile: formData.get('inputfile'),
+    };
+    await postUpload(formValues);
+  }
+
   async function submitNewFolder(e) {
     e.preventDefault();
     await makeDir({ newFolder });
@@ -78,6 +86,7 @@ export default function FileViewer() {
           type='text'
           name='foldername'
           id='foldername'
+          className='border-2'
           onChange={e => setNewFolder(e.target.value)}
         />
         <button type='submit' className={formButton}>
@@ -112,8 +121,16 @@ export default function FileViewer() {
           {currentFolders}
           {datafiles}
         </div>
-
         {buttons}
+        <form
+          onSubmit={e => uploadFile(e)}
+          method='post'
+          encType='multipart/form-data'
+        >
+          <label htmlFor=''></label>
+          <input type='file' name='inputfile' />
+          <button type='submit'>Upload</button>
+        </form>
       </div>
     </CenterContainer>
   );
