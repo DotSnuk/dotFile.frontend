@@ -8,7 +8,7 @@ import { makeDir, getDir, postUpload, getHomeDir } from '../../api/backend';
 import { Folder } from 'lucide-react';
 
 export default function FileViewer() {
-  const { loading, isAuth } = useUser();
+  const { loading, user, isAuth } = useUser();
   const [files, setFiles] = useState([]);
   const [folders, setFolders] = useState([]);
   const [currentFolderId, setCurrentFolderId] = useState(0);
@@ -16,7 +16,11 @@ export default function FileViewer() {
   const [newFolder, setNewFolder] = useState('');
 
   useEffect(() => {
-    getFolderData();
+    async function init() {
+      await homeDir();
+      getFolderData();
+    }
+    init();
   }, []);
 
   useEffect(() => {
@@ -38,10 +42,10 @@ export default function FileViewer() {
 
   const datafiles = Array.isArray(files) ? (
     files.map(file => (
-      <div key={file.filename} className={textRow + ' grid grid-cols-7'}>
-        <span className='col-span-4'>{file.filename}</span>
-        <span className='col-span-2'>{getDateString(file.dateCreated)}</span>
-        <span className='col-span-1'>{sizeConverter(file.size)}</span>
+      <div key={file.name} className={textRow + ' grid grid-cols-7'}>
+        <span className='col-span-4'>{file.name}</span>
+        <span className='col-span-2'>{getDateString(file.createdAt)}</span>
+        <span className='col-span-1'>{sizeConverter(file.sizeBytes)}</span>
       </div>
     ))
   ) : (
@@ -55,22 +59,34 @@ export default function FileViewer() {
     </div>
   );
 
+  async function homeDir() {
+    const folderData = await getHomeDir();
+    setCurrentFolderId(folderData.id);
+  }
+
   async function getFolderData() {
     // const folderData = await getDir({ path: getFullPath(currentFolderId) });
     // setFiles folderData.items);
     // setFolders folderData.folders);
-    const folderData = await getHomeDir();
-    setCurrentPath(getFullPath(folderData));
-    setCurrentFolderId(folderData.id);
-    console.log(folderData);
+    if (user !== null) {
+      // needed for  first render
+      const folderData = await getDir({ folderId: currentFolderId });
+      setFiles(folderData);
+      // setCurrentPath(getFullPath(folderData));
+      console.log(folderData);
+    }
   }
+
+  async function getFiles() {}
 
   async function uploadFile(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
     const formValues = {
       inputfile: formData.get('inputfile'),
+      folderId: currentFolderId,
     };
+
     await postUpload(formValues);
   }
 
