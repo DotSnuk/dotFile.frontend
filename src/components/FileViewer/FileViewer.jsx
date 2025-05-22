@@ -18,7 +18,11 @@ export default function FileViewer() {
   const { loading, user, isAuth } = useUser();
   const [files, setFiles] = useState([]);
   const [folders, setFolders] = useState([]);
-  const [currentFolderId, setCurrentFolderId] = useState(0);
+  const [currentFolder, setCurrentFolder] = useState({
+    id: 0,
+    parent: { id: null },
+  });
+  const [parentFolderId, setParentFolderId] = useState(null);
   const [currentPath, setCurrentPath] = useState('');
   const [newFolder, setNewFolder] = useState('');
 
@@ -32,14 +36,14 @@ export default function FileViewer() {
 
   useEffect(() => {
     getFolderData();
-  }, [currentFolderId]);
+  }, [currentFolder.id]);
 
   const currentFolders = folders.map(folder => (
     <div
       key={folder.id}
       className='flex flex-row gap-1'
       onClick={() => {
-        setCurrentFolderId(folder.id);
+        setCurrentFolder(prev => ({ id: folder.id, parent: prev }));
       }}
     >
       <Folder />
@@ -68,7 +72,7 @@ export default function FileViewer() {
 
   async function homeDir() {
     const folderData = await getHomeDir();
-    setCurrentFolderId(folderData.id);
+    setCurrentFolder({ id: folderData.id, parent: { id: null } });
   }
 
   async function getFolderData() {
@@ -77,14 +81,15 @@ export default function FileViewer() {
     // setFolders folderData.folders);
     if (user !== null) {
       // needed for  first render
-      const folderData = await getDir({ folderId: currentFolderId });
+      const folderData = await getDir({ folderId: currentFolder.id }); // could be fileData
       setFiles(folderData);
-      const childFolders = await getChildFolders({ currentFolderId });
+      const childFolders = await getChildFolders({
+        currentFolderId: currentFolder.id,
+      });
       setFolders(childFolders);
       const folderStucture = await getFolderStructure({
-        folderId: currentFolderId,
+        folderId: currentFolder.id,
       });
-      console.log(folderStucture);
       setCurrentPath(getFullPath(folderStucture));
       // setCurrentPath(getFullPath(folderData));
     }
@@ -97,7 +102,7 @@ export default function FileViewer() {
     const formData = new FormData(e.target);
     const formValues = {
       inputfile: formData.get('inputfile'),
-      folderId: currentFolderId,
+      folderId: currentFolder.id,
     };
 
     await postUpload(formValues);
@@ -105,7 +110,7 @@ export default function FileViewer() {
 
   async function submitNewFolder(e) {
     e.preventDefault();
-    await makeDir({ folderName: newFolder, currentFolderId });
+    await makeDir({ folderName: newFolder, currentFolder: currentFolder.id });
   }
 
   const buttons = (
@@ -136,7 +141,15 @@ export default function FileViewer() {
           <span className='col-span-2 text-xs'>Date</span>
           <span className='col-span-1 text-xs'>Size</span>
         </div>
-
+        {currentFolder.parent.id !== null && (
+          <div
+            className='flex flex-row gap-1'
+            onClick={() => setCurrentFolder(currentFolder.parent)}
+          >
+            <Folder />
+            <div>..</div>
+          </div>
+        )}
         {/* {currentFolderId.parent !== null && (
           <div
             className='flex flex-row gap-1'
@@ -165,9 +178,9 @@ export default function FileViewer() {
   );
 }
 
-function PathNode(path, parent = null) {
-  return { path, parent };
-}
+// function PathNode(path, parent = null) {
+//   return { path, parent };
+// }
 
 // function getFullPath(node, path = '') {
 //   while (node.parent !== null)
@@ -176,7 +189,6 @@ function PathNode(path, parent = null) {
 // }
 
 function getFullPath(node, path = '') {
-  console.log(node);
   if (node.parent !== undefined && node.parent !== null)
     return getFullPath(node.parent, node.name + '/');
   return '/' + path;
