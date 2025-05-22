@@ -80,12 +80,11 @@ export default function FileViewer() {
       const folderData = await getDir({ folderId: currentFolderId });
       setFiles(folderData);
       const childFolders = await getChildFolders({ currentFolderId });
-      console.log(childFolders);
       setFolders(childFolders);
-
       const folderStucture = await getFolderStructure({
         folderId: currentFolderId,
       });
+      console.log(folderStucture);
       setCurrentPath(getFullPath(folderStucture));
       // setCurrentPath(getFullPath(folderData));
     }
@@ -177,6 +176,8 @@ function PathNode(path, parent = null) {
 // }
 
 function getFullPath(node, path = '') {
-  while (node.parent !== null) return getFullPath(node.parent, node.name + '/');
+  console.log(node);
+  if (node.parent !== undefined && node.parent !== null)
+    return getFullPath(node.parent, node.name + '/');
   return '/' + path;
 }
