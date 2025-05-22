@@ -54,6 +54,17 @@ export async function getHomeDir() {
   return response.data;
 }
 
-export async function makeDir(newFolder) {
-  await axios.post('/api/makeDir', newFolder);
+export async function getFolderStructure(folderId) {
+  const response = await axios.post('/api/folderStructure', folderId);
+  return response.data;
+}
+
+export async function makeDir(folderData) {
+  const response = await axios.post('/api/makeDir', folderData);
+  return response.data;
+}
+
+export async function getChildFolders(currentFolderId) {
+  const response = await axios.post('/api/getChildFolders', currentFolderId);
+  return response.data;
 }

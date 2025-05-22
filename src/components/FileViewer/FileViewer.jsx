@@ -4,7 +4,14 @@ import { useEffect, useState } from 'react';
 import { getDateString } from '../../utils/dateParser';
 import sizeConverter from '../../utils/sizeConverter';
 import { inputForm, textRow, formButton } from '../../assets/tailwindClasses';
-import { makeDir, getDir, postUpload, getHomeDir } from '../../api/backend';
+import {
+  makeDir,
+  getDir,
+  postUpload,
+  getHomeDir,
+  getFolderStructure,
+  getChildFolders,
+} from '../../api/backend';
 import { Folder } from 'lucide-react';
 
 export default function FileViewer() {
@@ -29,14 +36,14 @@ export default function FileViewer() {
 
   const currentFolders = folders.map(folder => (
     <div
-      key={folder}
+      key={folder.id}
       className='flex flex-row gap-1'
       onClick={() => {
-        setCurrentFolderId(prev => new PathNode(folder, prev));
+        setCurrentFolderId(folder.id);
       }}
     >
       <Folder />
-      <div>{folder}</div>
+      <div>{folder.name}</div>
     </div>
   ));
 
@@ -72,8 +79,15 @@ export default function FileViewer() {
       // needed for  first render
       const folderData = await getDir({ folderId: currentFolderId });
       setFiles(folderData);
+      const childFolders = await getChildFolders({ currentFolderId });
+      console.log(childFolders);
+      setFolders(childFolders);
+
+      const folderStucture = await getFolderStructure({
+        folderId: currentFolderId,
+      });
+      setCurrentPath(getFullPath(folderStucture));
       // setCurrentPath(getFullPath(folderData));
-      console.log(folderData);
     }
   }
 
@@ -92,7 +106,7 @@ export default function FileViewer() {
 
   async function submitNewFolder(e) {
     e.preventDefault();
-    await makeDir({ newFolder });
+    await makeDir({ folderName: newFolder, currentFolderId });
   }
 
   const buttons = (
